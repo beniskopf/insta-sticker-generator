@@ -72,12 +72,17 @@ export async function buildStickerSvg(cfg) {
   const txT = textStartX - tx1;
   const tyT = margin + (contentH - tH) / 2 - ty1;
 
-  // One color drives both glyph and text; the background is always white.
+  // One color drives both glyph and text; the background is a fixed gray.
   const color = cfg.color;
+
+  // Physical print size: the user picks the total width in cm, height follows
+  // the content aspect ratio and is reported back read-only.
+  const widthCm = cfg.widthCm ?? 20;
+  const heightCm = Math.round((widthCm * (H / W)) * 10) / 10;
 
   const parts = [];
   parts.push(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${round(W)} ${round(H)}" width="${round(W)}" height="${round(H)}">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${round(W)} ${round(H)}" width="${widthCm}cm" height="${heightCm}cm">`,
   );
   parts.push(`<rect x="0" y="0" width="${round(W)}" height="${round(H)}" fill="${BACKGROUND}"/>`);
   parts.push(
@@ -89,5 +94,6 @@ export async function buildStickerSvg(cfg) {
     );
   }
   parts.push('</svg>');
-  return parts.join('');
+
+  return { svg: parts.join(''), widthCm, heightCm };
 }

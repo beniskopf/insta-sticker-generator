@@ -9,12 +9,27 @@
   // Restore from the URL if present, else defaults.
   let config = $state(sanitizeConfig(readUrl() ?? DEFAULT_CONFIG));
 
-  let copied = $state(false);
+  let built = $state({ svg: '', heightCm: 0 });
+  let shared = $state(false);
   let urlReady = $state(false);
 
   onMount(() => {
     preloadFonts();
     urlReady = true;
+  });
+
+  // Rebuild the sticker whenever any parameter changes.
+  $effect(() => {
+    const snap = $state.snapshot(config);
+    let cancelled = false;
+    buildStickerSvg(snap)
+      .then((r) => {
+        if (!cancelled) built = r;
+      })
+      .catch((e) => console.error(e));
+    return () => {
+      cancelled = true;
+    };
   });
 
   // Keep the URL in sync with every parameter change (after initial mount).
@@ -23,74 +38,37 @@
     if (urlReady) writeUrl(snap);
   });
 
-  async function currentSvg() {
-    return buildStickerSvg($state.snapshot(config));
-  }
-
-  async function copySvg() {
-    const svg = await currentSvg();
-    try {
-      await navigator.clipboard.writeText(svg);
-      copied = true;
-      setTimeout(() => (copied = false), 1600);
-    } catch {
-      downloadSvg();
-    }
-  }
-
-  function fileName() {
-    const base = (config.text || 'sticker')
-      .replace(/[^a-z0-9-_]+/gi, '-')
-      .replace(/^-+|-+$/g, '')
-      .toLowerCase();
-    return (base || 'sticker') + '.svg';
-  }
-
-  async function downloadSvg() {
-    const svg = await currentSvg();
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName();
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(location.href);
-      linkCopied = true;
-      setTimeout(() => (linkCopied = false), 1600);
     } catch {
-      /* ignore */
+      /* URL is in the address bar regardless */
     }
+    shared = true;
   }
-  let linkCopied = $state(false);
 </script>
 
 <main>
   <header>
     <h1>Insta Sticker Generator</h1>
-    <p>Logo + Text → einfarbige SVG für den Sticker-Plotter.</p>
+    <p>powered by Folientechnik West</p>
   </header>
 
   <div class="layout">
-    <Controls bind:config />
+    <Controls bind:config heightCm={built.heightCm} />
 
     <section class="right">
-      <Preview {config} />
+      <Preview svg={built.svg} />
       <div class="exportbar">
-        <button class="btn primary" onclick={copySvg}>
-          {copied ? 'Kopiert ✓' : 'SVG kopieren'}
-        </button>
-        <button class="btn" onclick={downloadSvg}>SVG herunterladen</button>
-        <button class="btn ghost" onclick={copyLink}>
-          {linkCopied ? 'Link kopiert ✓' : 'Link teilen'}
+        <button class="btn primary" onclick={copyLink}>
+          {shared ? 'Link kopiert ✓' : 'Link zum Teilen kopieren'}
         </button>
       </div>
+      {#if shared}
+        <div class="order-msg">
+          Teile diesen Link im Chat und gib deine Bestellung auf. 🎉
+        </div>
+      {/if}
     </section>
   </div>
 </main>
@@ -113,6 +91,7 @@
     margin: 0.35rem 0 1.75rem;
     color: #6b6b74;
     font-size: 0.95rem;
+    font-weight: 600;
   }
   .layout {
     display: flex;
@@ -132,7 +111,7 @@
     flex-wrap: wrap;
   }
   .btn {
-    padding: 0.7rem 1.1rem;
+    padding: 0.75rem 1.3rem;
     border: 1px solid #dcdce4;
     border-radius: 10px;
     background: #fff;
@@ -149,8 +128,14 @@
     color: #fff;
     background: linear-gradient(90deg, #dd2a7b, #8134af);
   }
-  .btn.ghost {
+  .order-msg {
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    background: #f6ecf5;
+    border: 1px solid #e6c9e2;
     color: #8134af;
+    font-weight: 600;
+    font-size: 0.95rem;
   }
   @media (max-width: 800px) {
     .layout {

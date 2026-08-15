@@ -3,7 +3,7 @@
   import { COLORS } from '../lib/palette.js';
   import { MAX_TEXT_LENGTH, RANGES } from '../lib/config.js';
 
-  let { config = $bindable() } = $props();
+  let { config = $bindable(), heightCm = 0 } = $props();
 </script>
 
 <div class="controls">
@@ -53,10 +53,17 @@
     <input type="range" min={RANGES.gap.min} max={RANGES.gap.max} step="1" bind:value={config.gap} />
   </label>
 
-  <p class="hint">
-    Hintergrund ist immer weiß. Beim Export wird der Text in Pfade umgewandelt –
-    einfarbig &amp; plotter-fertig.
-  </p>
+  <div class="size-block">
+    <label class="field">
+      <span>Gesamtbreite (inkl. Logo) <em>{config.widthCm} cm</em></span>
+      <input type="range" min={RANGES.widthCm.min} max={RANGES.widthCm.max} step="1" bind:value={config.widthCm} />
+      <div class="range-scale"><span>{RANGES.widthCm.min} cm</span><span>{RANGES.widthCm.max} cm</span></div>
+    </label>
+    <div class="field readonly">
+      <span>Höhe (automatisch)</span>
+      <output>{heightCm} cm</output>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -118,11 +125,29 @@
     border-color: #c13584;
     box-shadow: 0 0 0 3px rgba(193, 53, 132, 0.25);
   }
-  .hint {
-    margin: 0.25rem 0 0;
-    font-size: 0.78rem;
+  .size-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 0.9rem;
+    border: 1px solid #e4e4ec;
+    border-radius: 12px;
+    background: #fafafc;
+  }
+  .range-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
     font-weight: 500;
-    color: #86868f;
-    line-height: 1.4;
+    color: #9a9aa2;
+  }
+  .readonly output {
+    padding: 0.55rem 0.7rem;
+    border: 1px dashed #cfcfd8;
+    border-radius: 10px;
+    background: #f0f0f4;
+    color: #6b6b74;
+    font-size: 0.95rem;
+    font-weight: 700;
   }
 </style>

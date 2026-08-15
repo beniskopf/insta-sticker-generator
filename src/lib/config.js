@@ -8,6 +8,8 @@ export const RANGES = {
   fontSize: { min: 20, max: 320 },
   logoSize: { min: 20, max: 320 },
   gap: { min: 0, max: 160 },
+  // Total sticker width in centimeters (logo + gap + text). Height follows automatically.
+  widthCm: { min: 10, max: 30 },
 };
 
 export const MARGIN = 24;
@@ -19,6 +21,7 @@ export const DEFAULT_CONFIG = {
   logoSize: 120,
   gap: 30,
   color: DEFAULT_COLOR,
+  widthCm: 20,
 };
 
 function clampNumber(value, { min, max }, fallback) {
@@ -38,5 +41,6 @@ export function sanitizeConfig(input) {
     logoSize: clampNumber(src.logoSize, RANGES.logoSize, d.logoSize),
     gap: clampNumber(src.gap, RANGES.gap, d.gap),
     color: isColorValue(src.color) ? src.color : d.color,
+    widthCm: clampNumber(src.widthCm, RANGES.widthCm, d.widthCm),
   };
 }

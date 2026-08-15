@@ -11,5 +11,5 @@ export function isColorValue(value) {
   return COLORS.some((c) => c.value.toLowerCase() === String(value).toLowerCase());
 }
 
-// Background is always white and cannot be changed.
-export const BACKGROUND = '#FFFFFF';
+// Fixed neutral-gray sticker background, so white artwork stays visible.
+export const BACKGROUND = '#BEBFC4';

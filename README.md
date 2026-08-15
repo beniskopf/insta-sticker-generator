@@ -11,12 +11,15 @@ npm run dev
 
 Dann [http://localhost:5178](http://localhost:5178) öffnen.
 
-## Bedienung
+## Bedienung (Kundenansicht)
 
-- Text eingeben, Schriftart (5 Fonts), Größen, Abstand und Farben einstellen.
-- Rechts die Live-Vorschau (auf Transparenz-Karo).
-- **SVG kopieren** legt den SVG-Code in die Zwischenablage (den kannst du weitergeben – er rendert überall gleich, weil der Text als Vektor-Pfad eingebettet ist).
-- **SVG herunterladen** speichert die Datei.
+- Text (max. 30 Zeichen – Instagram-Handle-Limit), Schriftart (10 Fonts), Farbe
+  (Schwarz / Rot / Weiß) sowie Schrift-, Logo- und Gesamtgröße einstellen.
+- **Gesamtbreite** in cm wählen (10–30 cm, inkl. Logo); die **Höhe** ergibt sich
+  automatisch aus dem Seitenverhältnis und wird read-only angezeigt.
+- Rechts die Live-Vorschau auf grauem Hintergrund.
+- **Link zum Teilen kopieren** legt einen Link mit dem kompletten Design in die
+  Zwischenablage – diesen im Chat teilen, um die Bestellung aufzugeben.
 
 ## Warum Text-zu-Pfad?
 

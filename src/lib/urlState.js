@@ -5,10 +5,10 @@ const KEY = 's';
 
 // Short keys keep the compressed payload small.
 function pack(cfg) {
-  return { t: cfg.text, f: cfg.fontId, s: cfg.fontSize, l: cfg.logoSize, g: cfg.gap, c: cfg.color };
+  return { t: cfg.text, f: cfg.fontId, s: cfg.fontSize, l: cfg.logoSize, g: cfg.gap, c: cfg.color, w: cfg.widthCm };
 }
 function unpack(p) {
-  return { text: p.t, fontId: p.f, fontSize: p.s, logoSize: p.l, gap: p.g, color: p.c };
+  return { text: p.t, fontId: p.f, fontSize: p.s, logoSize: p.l, gap: p.g, color: p.c, widthCm: p.w };
 }
 
 export function encodeConfig(cfg) {
