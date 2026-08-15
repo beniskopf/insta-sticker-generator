@@ -30,9 +30,11 @@
     border-radius: 16px;
     min-height: 320px;
     overflow: hidden;
-    /* Gray fallback stays visible if public/mockup-bg.jpg is missing. */
-    background-color: #cfd1d6;
-    background-image: url('/mockup-bg.jpg');
+    /* Gray veil over the mockup so both black and white artwork stay visible.
+       Mid-gray fallback color shows if public/mockup-bg.jpg is missing. */
+    background-color: #8a8b90;
+    background-image: linear-gradient(rgba(140, 141, 146, 0.55), rgba(140, 141, 146, 0.55)),
+      url('/mockup-bg.jpg');
     background-size: cover;
     background-position: center;
   }

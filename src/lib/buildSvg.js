@@ -1,7 +1,6 @@
 import * as opentypeNS from 'opentype.js';
 import { FONTS } from './fonts.js';
 import { glyphPathData, GLYPH_BOX } from './glyph.js';
-import { BACKGROUND } from './palette.js';
 
 // opentype.js is CommonJS; grab whichever shape Vite hands us.
 const opentype = opentypeNS.default ?? opentypeNS;
@@ -72,7 +71,7 @@ export async function buildStickerSvg(cfg) {
   const txT = textStartX - tx1;
   const tyT = margin + (contentH - tH) / 2 - ty1;
 
-  // One color drives both glyph and text; the background is a fixed gray.
+  // One color drives both glyph and text; the sticker background is transparent.
   const color = cfg.color;
 
   // Physical print size: the user picks the total width in cm, height follows
@@ -84,7 +83,6 @@ export async function buildStickerSvg(cfg) {
   parts.push(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${round(W)} ${round(H)}" width="${widthCm}cm" height="${heightCm}cm">`,
   );
-  parts.push(`<rect x="0" y="0" width="${round(W)}" height="${round(H)}" fill="${BACKGROUND}"/>`);
   parts.push(
     `<g transform="translate(${round(gx)} ${round(gy)}) scale(${scale.toFixed(4)})" fill="${color}" fill-rule="evenodd"><path d="${glyphPathData()}"/></g>`,
   );
