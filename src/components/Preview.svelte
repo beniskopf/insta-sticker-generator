@@ -1,9 +1,13 @@
 <script>
   let { svg } = $props();
+
+  // public/ assets keep their name but move under the deploy base path, so the
+  // URL has to be built from BASE_URL instead of hardcoding a root-absolute one.
+  const mockupUrl = `${import.meta.env.BASE_URL}mockup-bg.jpg`;
 </script>
 
 <div class="preview">
-  <div class="canvas">
+  <div class="canvas" style="--mockup: url('{mockupUrl}')">
     {#if svg}
       <div class="svg-wrap">{@html svg}</div>
     {/if}
@@ -34,7 +38,7 @@
        Mid-gray fallback color shows if public/mockup-bg.jpg is missing. */
     background-color: #8a8b90;
     background-image: linear-gradient(rgba(140, 141, 146, 0.55), rgba(140, 141, 146, 0.55)),
-      url('/mockup-bg.jpg');
+      var(--mockup);
     background-size: cover;
     background-position: center;
   }
