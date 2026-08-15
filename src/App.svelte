@@ -46,6 +46,27 @@
     }
     shared = true;
   }
+
+  function fileName() {
+    const base = (config.text || 'sticker')
+      .replace(/[^a-z0-9-_]+/gi, '-')
+      .replace(/^-+|-+$/g, '')
+      .toLowerCase();
+    return (base || 'sticker') + '.svg';
+  }
+
+  function downloadSvg() {
+    if (!built.svg) return;
+    const blob = new Blob([built.svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
 </script>
 
 <main>
@@ -63,6 +84,7 @@
         <button class="btn primary" onclick={copyLink}>
           {shared ? 'Link kopiert ✓' : 'Link zum Teilen kopieren'}
         </button>
+        <button class="btn-text" onclick={downloadSvg}>SVG herunterladen</button>
       </div>
       {#if shared}
         <div class="order-msg">
@@ -107,8 +129,23 @@
   }
   .exportbar {
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     flex-wrap: wrap;
+    align-items: center;
+  }
+  .btn-text {
+    border: none;
+    background: none;
+    padding: 0.4rem 0.2rem;
+    color: #86868f;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .btn-text:hover {
+    color: #3a3a44;
   }
   .btn {
     padding: 0.75rem 1.3rem;
