@@ -1,9 +1,10 @@
 <script>
   let { svg } = $props();
 
-  // public/ assets keep their name but move under the deploy base path, so the
-  // URL has to be built from BASE_URL instead of hardcoding a root-absolute one.
-  const mockupUrl = `${import.meta.env.BASE_URL}mockup-bg.jpg`;
+  // Resolved against the document up front: a relative url() inside a CSS custom
+  // property is resolved against the stylesheet that consumes it (/assets/…),
+  // not the page, which pointed the request at a path holding no image.
+  const mockupUrl = new URL(`${import.meta.env.BASE_URL}mockup-bg.jpg`, location.href).href;
 </script>
 
 <div class="preview">
