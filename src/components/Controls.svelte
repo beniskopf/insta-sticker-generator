@@ -9,7 +9,7 @@
 <div class="controls">
   <label class="field">
     <span>Text <em>{config.text.length}/{MAX_TEXT_LENGTH}</em></span>
-    <input type="text" maxlength={MAX_TEXT_LENGTH} bind:value={config.text} placeholder="deinhandle" />
+    <input type="text" maxlength={MAX_TEXT_LENGTH} bind:value={config.text} placeholder="deinname" />
   </label>
 
   <label class="field">

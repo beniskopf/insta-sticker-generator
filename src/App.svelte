@@ -3,11 +3,14 @@
   import Controls from './components/Controls.svelte';
   import Preview from './components/Preview.svelte';
   import { buildStickerSvg, preloadFonts } from './lib/buildSvg.js';
-  import { DEFAULT_CONFIG, sanitizeConfig } from './lib/config.js';
+  import { DEFAULT_CONFIG } from './lib/config.js';
   import { readUrl, writeUrl } from './lib/urlState.js';
 
-  // Restore from the URL if present, else defaults.
-  let config = $state(sanitizeConfig(readUrl() ?? DEFAULT_CONFIG));
+  // Restore from the URL if present, else defaults. A present-but-broken hash
+  // (mistyped/corrupted link) falls back to defaults and flags an error.
+  const loaded = readUrl();
+  let config = $state(loaded.config ?? { ...DEFAULT_CONFIG });
+  let loadError = $state(loaded.error);
 
   let built = $state({ svg: '', heightCm: 0 });
   let shared = $state(false);
@@ -75,6 +78,13 @@
     <p>powered by Folientechnik West</p>
   </header>
 
+  {#if loadError}
+    <div class="load-error" role="alert">
+      <span>Einstellungen konnten nicht übernommen werden – gestartet mit den Standardwerten.</span>
+      <button class="close" aria-label="Hinweis schließen" onclick={() => (loadError = false)}>×</button>
+    </div>
+  {/if}
+
   <div class="layout">
     <Controls bind:config heightCm={built.heightCm} />
 
@@ -114,6 +124,31 @@
     color: #6b6b74;
     font-size: 0.95rem;
     font-weight: 600;
+  }
+  .load-error {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: #fdeaea;
+    border: 1px solid #f3c2c2;
+    color: #a5342f;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .load-error span {
+    flex: 1;
+  }
+  .load-error .close {
+    border: none;
+    background: none;
+    color: #a5342f;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
   }
   .layout {
     display: flex;

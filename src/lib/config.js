@@ -15,7 +15,7 @@ export const RANGES = {
 export const MARGIN = 24;
 
 export const DEFAULT_CONFIG = {
-  text: 'yourhandle',
+  text: 'deinname',
   fontId: DEFAULT_FONT_ID,
   fontSize: 140,
   logoSize: 120,

@@ -22,16 +22,22 @@ export function writeUrl(cfg) {
   history.replaceState(null, '', url);
 }
 
-/** Read + sanitize config from the URL hash, or null if absent/invalid. */
+/**
+ * Read config from the URL hash.
+ * Returns { config, error }:
+ *  - no hash present      → { config: null, error: false }  (normal fresh start)
+ *  - hash present, broken → { config: null, error: true }   (corrupted/mistyped link)
+ *  - hash present, valid  → { config: <sanitized>, error: false }
+ */
 export function readUrl() {
   const hash = location.hash.replace(/^#/, '');
   const enc = new URLSearchParams(hash).get(KEY);
-  if (!enc) return null;
+  if (!enc) return { config: null, error: false };
   try {
     const json = LZString.decompressFromEncodedURIComponent(enc);
-    if (!json) return null;
-    return sanitizeConfig(unpack(JSON.parse(json)));
+    if (!json) return { config: null, error: true };
+    return { config: sanitizeConfig(unpack(JSON.parse(json))), error: false };
   } catch {
-    return null;
+    return { config: null, error: true };
   }
 }
