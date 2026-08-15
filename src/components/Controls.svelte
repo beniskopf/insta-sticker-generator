@@ -1,13 +1,15 @@
 <script>
   import { FONTS } from '../lib/fonts.js';
+  import { COLORS } from '../lib/palette.js';
+  import { MAX_TEXT_LENGTH, RANGES } from '../lib/config.js';
 
   let { config = $bindable() } = $props();
 </script>
 
 <div class="controls">
   <label class="field">
-    <span>Text</span>
-    <input type="text" bind:value={config.text} placeholder="dein Text" />
+    <span>Text <em>{config.text.length}/{MAX_TEXT_LENGTH}</em></span>
+    <input type="text" maxlength={MAX_TEXT_LENGTH} bind:value={config.text} placeholder="deinhandle" />
   </label>
 
   <label class="field">
@@ -19,58 +21,56 @@
     </select>
   </label>
 
+  <div class="field">
+    <span>Farbe</span>
+    <div class="swatches">
+      {#each COLORS as c (c.id)}
+        <button
+          type="button"
+          class="swatch"
+          class:active={config.color.toLowerCase() === c.value.toLowerCase()}
+          style="--sw:{c.value}"
+          aria-label={c.label}
+          title={c.label}
+          onclick={() => (config.color = c.value)}
+        ></button>
+      {/each}
+    </div>
+  </div>
+
   <label class="field">
     <span>Schriftgröße <em>{config.fontSize}</em></span>
-    <input type="range" min="20" max="320" step="1" bind:value={config.fontSize} />
+    <input type="range" min={RANGES.fontSize.min} max={RANGES.fontSize.max} step="1" bind:value={config.fontSize} />
   </label>
 
   <label class="field">
     <span>Logo-Größe <em>{config.logoSize}</em></span>
-    <input type="range" min="20" max="320" step="1" bind:value={config.logoSize} />
+    <input type="range" min={RANGES.logoSize.min} max={RANGES.logoSize.max} step="1" bind:value={config.logoSize} />
   </label>
 
   <label class="field">
     <span>Abstand Logo ↔ Text <em>{config.gap}</em></span>
-    <input type="range" min="0" max="160" step="1" bind:value={config.gap} />
+    <input type="range" min={RANGES.gap.min} max={RANGES.gap.max} step="1" bind:value={config.gap} />
   </label>
 
-  <div class="row">
-    <label class="field color">
-      <span>Logo-Farbe</span>
-      <input type="color" bind:value={config.logoColor} />
-    </label>
-    <label class="field color">
-      <span>Text-Farbe</span>
-      <input type="color" bind:value={config.textColor} />
-    </label>
-  </div>
-
-  <div class="row bg">
-    <label class="field check">
-      <input type="checkbox" bind:checked={config.bgOn} />
-      <span>Hintergrund</span>
-    </label>
-    <label class="field color" class:disabled={!config.bgOn}>
-      <span>Farbe</span>
-      <input type="color" bind:value={config.bgColor} disabled={!config.bgOn} />
-    </label>
-  </div>
-
-  <p class="hint">Beim Export wird der Text in Pfade umgewandelt – einfarbig &amp; plotter-fertig.</p>
+  <p class="hint">
+    Hintergrund ist immer weiß. Beim Export wird der Text in Pfade umgewandelt –
+    einfarbig &amp; plotter-fertig.
+  </p>
 </div>
 
 <style>
   .controls {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.1rem;
     width: 320px;
     flex-shrink: 0;
   }
   .field {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.4rem;
     font-size: 0.85rem;
     font-weight: 600;
     color: #3a3a44;
@@ -97,34 +97,26 @@
     width: 100%;
     accent-color: #c13584;
   }
-  input[type='color'] {
-    width: 100%;
-    height: 38px;
-    padding: 2px;
-    border: 1px solid #dcdce4;
-    border-radius: 10px;
-    background: #fff;
-    cursor: pointer;
-  }
-  .row {
+  .swatches {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.6rem;
   }
-  .row .field {
-    flex: 1;
+  .swatch {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid #d0d0da;
+    background: var(--sw);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.05s ease;
   }
-  .check {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
+  .swatch:active {
+    transform: scale(0.94);
   }
-  .check input {
-    width: 18px;
-    height: 18px;
-    accent-color: #c13584;
-  }
-  .color.disabled {
-    opacity: 0.45;
+  .swatch.active {
+    border-color: #c13584;
+    box-shadow: 0 0 0 3px rgba(193, 53, 132, 0.25);
   }
   .hint {
     margin: 0.25rem 0 0;

@@ -3,24 +3,24 @@
   import Controls from './components/Controls.svelte';
   import Preview from './components/Preview.svelte';
   import { buildStickerSvg, preloadFonts } from './lib/buildSvg.js';
+  import { DEFAULT_CONFIG, sanitizeConfig } from './lib/config.js';
+  import { readUrl, writeUrl } from './lib/urlState.js';
 
-  let config = $state({
-    text: 'yourhandle',
-    fontId: 'poppins',
-    fontSize: 140,
-    logoSize: 120,
-    gap: 30,
-    logoColor: '#111111',
-    textColor: '#111111',
-    bgOn: false,
-    bgColor: '#ffffff',
-    margin: 24,
-  });
+  // Restore from the URL if present, else defaults.
+  let config = $state(sanitizeConfig(readUrl() ?? DEFAULT_CONFIG));
 
   let copied = $state(false);
+  let urlReady = $state(false);
 
   onMount(() => {
     preloadFonts();
+    urlReady = true;
+  });
+
+  // Keep the URL in sync with every parameter change (after initial mount).
+  $effect(() => {
+    const snap = $state.snapshot(config);
+    if (urlReady) writeUrl(snap);
   });
 
   async function currentSvg() {
@@ -34,13 +34,15 @@
       copied = true;
       setTimeout(() => (copied = false), 1600);
     } catch {
-      // Clipboard blocked → fall back to a download so nothing is lost.
       downloadSvg();
     }
   }
 
   function fileName() {
-    const base = (config.text || 'sticker').replace(/[^a-z0-9-_]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
+    const base = (config.text || 'sticker')
+      .replace(/[^a-z0-9-_]+/gi, '-')
+      .replace(/^-+|-+$/g, '')
+      .toLowerCase();
     return (base || 'sticker') + '.svg';
   }
 
@@ -56,6 +58,17 @@
     a.remove();
     URL.revokeObjectURL(url);
   }
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      linkCopied = true;
+      setTimeout(() => (linkCopied = false), 1600);
+    } catch {
+      /* ignore */
+    }
+  }
+  let linkCopied = $state(false);
 </script>
 
 <main>
@@ -74,6 +87,9 @@
           {copied ? 'Kopiert ✓' : 'SVG kopieren'}
         </button>
         <button class="btn" onclick={downloadSvg}>SVG herunterladen</button>
+        <button class="btn ghost" onclick={copyLink}>
+          {linkCopied ? 'Link kopiert ✓' : 'Link teilen'}
+        </button>
       </div>
     </section>
   </div>
@@ -113,6 +129,7 @@
   .exportbar {
     display: flex;
     gap: 0.75rem;
+    flex-wrap: wrap;
   }
   .btn {
     padding: 0.7rem 1.1rem;
@@ -131,6 +148,9 @@
     border: none;
     color: #fff;
     background: linear-gradient(90deg, #dd2a7b, #8134af);
+  }
+  .btn.ghost {
+    color: #8134af;
   }
   @media (max-width: 800px) {
     .layout {

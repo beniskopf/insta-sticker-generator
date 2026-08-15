@@ -1,6 +1,7 @@
 import * as opentypeNS from 'opentype.js';
 import { FONTS } from './fonts.js';
 import { glyphPathData, GLYPH_BOX } from './glyph.js';
+import { BACKGROUND } from './palette.js';
 
 // opentype.js is CommonJS; grab whichever shape Vite hands us.
 const opentype = opentypeNS.default ?? opentypeNS;
@@ -71,19 +72,20 @@ export async function buildStickerSvg(cfg) {
   const txT = textStartX - tx1;
   const tyT = margin + (contentH - tH) / 2 - ty1;
 
+  // One color drives both glyph and text; the background is always white.
+  const color = cfg.color;
+
   const parts = [];
   parts.push(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${round(W)} ${round(H)}" width="${round(W)}" height="${round(H)}">`,
   );
-  if (cfg.bgOn) {
-    parts.push(`<rect x="0" y="0" width="${round(W)}" height="${round(H)}" fill="${cfg.bgColor}"/>`);
-  }
+  parts.push(`<rect x="0" y="0" width="${round(W)}" height="${round(H)}" fill="${BACKGROUND}"/>`);
   parts.push(
-    `<g transform="translate(${round(gx)} ${round(gy)}) scale(${scale.toFixed(4)})" fill="${cfg.logoColor}" fill-rule="evenodd"><path d="${glyphPathData()}"/></g>`,
+    `<g transform="translate(${round(gx)} ${round(gy)}) scale(${scale.toFixed(4)})" fill="${color}" fill-rule="evenodd"><path d="${glyphPathData()}"/></g>`,
   );
   if (hasText) {
     parts.push(
-      `<path transform="translate(${round(txT)} ${round(tyT)})" fill="${cfg.textColor}" d="${textPathData}"/>`,
+      `<path transform="translate(${round(txT)} ${round(tyT)})" fill="${color}" d="${textPathData}"/>`,
     );
   }
   parts.push('</svg>');

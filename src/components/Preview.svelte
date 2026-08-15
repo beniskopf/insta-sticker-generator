@@ -27,7 +27,7 @@
 </script>
 
 <div class="preview">
-  <div class="canvas checker">
+  <div class="canvas">
     {#if svg}
       <div class="svg-wrap">{@html svg}</div>
     {/if}
@@ -53,16 +53,7 @@
     border-radius: 16px;
     min-height: 320px;
     overflow: hidden;
-  }
-  .checker {
-    background-color: #fff;
-    background-image:
-      linear-gradient(45deg, #e9e9ef 25%, transparent 25%),
-      linear-gradient(-45deg, #e9e9ef 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #e9e9ef 75%),
-      linear-gradient(-45deg, transparent 75%, #e9e9ef 75%);
-    background-size: 22px 22px;
-    background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+    background: #e9e9ef;
   }
   .svg-wrap :global(svg) {
     max-width: 100%;
